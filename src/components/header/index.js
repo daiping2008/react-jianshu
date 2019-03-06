@@ -107,6 +107,7 @@ const mapDispatchToProps = dispatch => {
     },
     handleInputFocus(){
       dispatch(actionCreators.searchFocus())
+      dispatch(actionCreators.getList())
     },
     handleMouseEnter() {
       dispatch(actionCreators.handleMouseEnter())
