@@ -12,10 +12,42 @@ import {
   NavSearch,
   Addition,
   Button,
+  SearchInfo,
+  SearchInfoTitle,
+  SearchInfoSwitch,
+  SearchInfoItem,
   NavSearchWrapper
 } from './styled'
 
 class Header extends Component {
+
+  getListArea() {
+    let {focused, mouseIn, handleMouseEnter, handleMouseLeave} = this.props
+    if (focused || mouseIn) {
+      return (
+        <SearchInfo 
+          onMouseEnter={handleMouseEnter} 
+          onMouseLeave={handleMouseLeave}
+        >
+          <SearchInfoTitle>热门搜索
+            <SearchInfoSwitch>换一批</SearchInfoSwitch>
+          </SearchInfoTitle>
+          <div>
+            <SearchInfoItem>打球</SearchInfoItem>
+            <SearchInfoItem>打球</SearchInfoItem>
+            <SearchInfoItem>打球</SearchInfoItem>
+            <SearchInfoItem>打球</SearchInfoItem>
+            <SearchInfoItem>打球</SearchInfoItem>
+            <SearchInfoItem>打球</SearchInfoItem>
+          </div>
+        </SearchInfo>
+      )
+    } else {
+      return null
+    }
+    
+  }
+
   constructor(props) {
     super(props)
     this.state = {
@@ -23,7 +55,7 @@ class Header extends Component {
     }
   }
   render(){
-    let {focused, handleInputBlur, handleInputFocus} = this.props
+    let {focused, mouseIn, handleInputBlur, handleInputFocus} = this.props
     return <HeaderWrapper>
       <Logo />
       <Nav>
@@ -42,9 +74,12 @@ class Header extends Component {
             <NavSearch 
               onBlur={handleInputBlur}
               onFocus={handleInputFocus} 
-              className={focused?'focused':''}></NavSearch>
+              className={(focused||mouseIn)?'focused':''}></NavSearch>
           </CSSTransition>
-          <i className={focused?'focused iconfont':'iconfont'}>&#xe64d;</i>
+          <i className={(focused||mouseIn)?'focused iconfont':'iconfont'}>&#xe64d;</i>
+          {
+            this.getListArea()
+          }
         </NavSearchWrapper>
       </Nav>
       <Addition>
@@ -60,7 +95,8 @@ class Header extends Component {
 
 const mapStateToProps = state => {
   return {
-    focused:state.get('header').get('focused')
+    focused:state.get('header').get('focused'),
+    mouseIn:state.get('header').get('mouseIn')
   }
 }
 
@@ -71,6 +107,12 @@ const mapDispatchToProps = dispatch => {
     },
     handleInputFocus(){
       dispatch(actionCreators.searchFocus())
+    },
+    handleMouseEnter() {
+      dispatch(actionCreators.handleMouseEnter())
+    },
+    handleMouseLeave() {
+      dispatch(actionCreators.handleMouseLeave())
     }
   }
 }
