@@ -1,4 +1,5 @@
 import * as actionTypes from './actionTypes'
+import {fromJS} from 'immutable'
 import {getHeaderList} from '../../../api'
 
 export const searchFocus = () => ({
@@ -17,9 +18,23 @@ export const handleMouseLeave = () => ({
   type: actionTypes.MOUSE_LEAVE
 })
 
+export const addHeaderList = (data) => ({
+  type: actionTypes.ADD_HEADER_LIST,
+  data: fromJS(data),
+  totalPage:Math.ceil(data.length/10)
+})
+
 export const getList = () => {
-  return dispatch => {
-    getHeaderList()
-    console.log(123)
+  return async dispatch => {
+    const res = await getHeaderList()
+    const {errno, data} = res
+    if (errno === 0) {
+      dispatch(addHeaderList(data))
+    }
   }
 }
+
+export const changePage = (page) => ({
+  type: actionTypes.CHANGE_PAGE,
+  page
+})

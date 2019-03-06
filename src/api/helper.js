@@ -1,8 +1,10 @@
 import axios from 'axios'
 
+const baseUrl = 'http://localhost:3030'
+
 export const get = url => (
   (params={}) => (
-    axios.get(url, {
+    axios.get(baseUrl+url, {
       params
     }).then(res => {
       let {status, data} = res
