@@ -2,6 +2,8 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {CSSTransition} from 'react-transition-group'
 
+import { actionCreators }  from './store'
+
 import {
   HeaderWrapper,
   Logo,
@@ -58,23 +60,17 @@ class Header extends Component {
 
 const mapStateToProps = state => {
   return {
-    focused:state.focused
+    focused:state.header.focused
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
     handleInputBlur(){
-      const action = {
-        type:'search_blur',
-      }
-      dispatch(action)
+      dispatch(actionCreators.searchBlur())
     },
     handleInputFocus(){
-      const action = {
-        type:'search_focus',
-      }
-      dispatch(action)
+      dispatch(actionCreators.searchFocus())
     }
   }
 }
