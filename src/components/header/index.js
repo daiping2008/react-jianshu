@@ -1,4 +1,5 @@
 import React, {Component} from 'react'
+import {connect} from 'react-redux'
 import {CSSTransition} from 'react-transition-group'
 
 import {
@@ -18,10 +19,9 @@ class Header extends Component {
     this.state = {
       focused:false
     }
-    this.handleInputFocus = this.handleInputFocus.bind(this)
-    this.handleInputBlur = this.handleInputBlur.bind(this)
   }
   render(){
+    let {focused, handleInputBlur, handleInputFocus} = this.props
     return <HeaderWrapper>
       <Logo />
       <Nav>
@@ -33,16 +33,16 @@ class Header extends Component {
         </NavItem>
         <NavSearchWrapper>
           <CSSTransition
-            in={this.state.focused}
+            in={focused}
             timeout={200}
             classNames="slide"
           >
             <NavSearch 
-              onBlur={this.handleInputBlur}
-              onFocus={this.handleInputFocus} 
-              className={this.state.focused?'focused':''}></NavSearch>
+              onBlur={handleInputBlur}
+              onFocus={handleInputFocus} 
+              className={focused?'focused':''}></NavSearch>
           </CSSTransition>
-          <i className={this.state.focused?'focused iconfont':'iconfont'}>&#xe64d;</i>
+          <i className={focused?'focused iconfont':'iconfont'}>&#xe64d;</i>
         </NavSearchWrapper>
       </Nav>
       <Addition>
@@ -54,17 +54,29 @@ class Header extends Component {
       </Addition>
     </HeaderWrapper>
   }
+}
 
-  handleInputFocus() {
-    this.setState({
-      focused:true
-    })
-  }
-  handleInputBlur(){
-    this.setState({
-      focused:false
-    })
+const mapStateToProps = state => {
+  return {
+    focused:state.focused
   }
 }
 
-export default Header
+const mapDispatchToProps = dispatch => {
+  return {
+    handleInputBlur(){
+      const action = {
+        type:'search_blur',
+      }
+      dispatch(action)
+    },
+    handleInputFocus(){
+      const action = {
+        type:'search_focus',
+      }
+      dispatch(action)
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Header)
