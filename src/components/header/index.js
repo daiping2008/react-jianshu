@@ -57,7 +57,7 @@ class Header extends Component {
     }
   }
   render(){
-    let {focused, mouseIn, list, handleInputBlur, handleInputFocus} = this.props
+    let { focused, mouseIn, list, handleInputBlur, handleInputFocus } = this.props
     return <HeaderWrapper>
       <Logo />
       <Nav>
