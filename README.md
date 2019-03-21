@@ -1,68 +1,133 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+##React项目准备详解
+1. 安装项目
+  `create-react-app react-cli`
+2. 项目初始化
+   1. 设置viewport
+    ```html
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=no" />
+    ```
+   2. 设置rem
+    ```js
+    document.addEventListener('DOMContentLoaded', () => {
+      const html = document.querySelector('html')
+      let fontSize  = window.innerWidth / 10
+      html.style.fontSize = (fontSize > 50 ? 50 : fontSize) + 'px'
+    })
+    ```
+   3. 安装CSS预处理器（SASS）
+    `yarn add node-sass scss-loader`
+    之前我们设置了HTML的font-size,那么我们配置mixin.scss方便计算
+    ```css
+    $ration: 375 / 10;
+    @function px2rem($px) {
+      @return $px / $ration + rem
+    }
+    ```
+   4. 重置样式文件RESET.CSS
+   5. 引入字体图标
+    [阿里巴巴矢量图](https://www.iconfont.cn/)
+3. 路由
+  安装路由  
+  `yarn add react-router-dom`
+  配置
+  ```js  
+  import React from 'react'
+  import { BrowserRouter, Route } from 'react-router-dom'
+  import Home from './views/home'
+  class router extends React.Component {
+    render() {
+      return (
+        <BrowserRouter>
+          <div>
+            <Route path="/" exact component={Home}></Route>
+          </div>
+        </BrowserRouter>
+      )
+    }
+  }
+  export default router
+  ```
+然后App.js引入
 
-## Available Scripts
+4. Redux
+  安装
+  `yarn add redux react-redux`
+  异步操作
+  `yarn add redux-thunk`
+  配置
+  ```js
+  import {Provider} from 'react-redux'
+  import store from './store'
+  <Provider store={store}>
+    <Router />
+  </Provider>
+  ```
+  Store->index.js
+  ```js
+  import {createStore, compose, applyMiddleware} from 'redux'
+  import thunk from 'redux-thunk'
+  import reducer from './reducer'
+  const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+  const store = createStore(reducer, composeEnhancers(
+    applyMiddleware(thunk)
+  ))
+  export default store
+  ```
+  Store->reducer.js
+  ```js
+  import {createStore, compose, applyMiddleware} from 'redux'
+  import thunk from 'redux-thunk'
+  import reducer from './reducer'
+  const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose
+  const store = createStore(reducer, composeEnhancers(
+    applyMiddleware(thunk)
+  ))
+  export default store
+  ```
+  组件中调用
+  ```js
+  import React, { Component } from 'react'
+  import {connect} from 'react-redux'
+  import {actionCreators} from '../../store/user'
 
-In the project directory, you can run:
+  class Home extends Component{
+    render(){
+      const { username, handleClick } = this.props
+      return <div>Home{username}
+        <button onClick={(ref) => handleClick(this)}>Click Me</button>
+      </div>
+    }
+  }
+  const mapStateToProps = state => {
+    return {
+      username: state.user.username
+    }
+  }
 
-### `npm start`
+  const mapDispathcToProps = dispatch => {
+    return {
+      handleClick() {
+        dispatch(actionCreators.setUserName('Li'))
+      }
+    }
+  }
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+  export default connect(mapStateToProps, mapDispathcToProps)(Home)
+  ```
+5. axios
+  `yarn add axios`
+  封装axios
+  ```js  
+  import axios from 'axios'
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+  export const get = url => (
+    (params={}) => (
+      axios.get(url, {
+        params
+      }).then(res => {
+        let {status, data} = res
+        return status === 200 ? data : ''
+      }).catch(e => {})
+    )
+  )
+  ```
